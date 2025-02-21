@@ -1,10 +1,18 @@
-module.exports = {
+export default {
     content: [
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
         extend: {
+            colors: {
+                cyan: {
+                    300: '#33ccff',
+                },
+                indigo: {
+                    900: '#1a237e',
+                },
+            },
             animation: {
                 fadeInUp: "fadeInUp 1s ease-out",
             },
@@ -23,4 +31,4 @@ module.exports = {
         },
     },
     plugins: [],
-}
+};

@@ -4,6 +4,8 @@ import useAuthStore from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "./Header";
+import Footer from "./Footer";
 
 const Dashboard = () => {
     const [tasks, setTasks] = useState([]);
@@ -13,7 +15,6 @@ const Dashboard = () => {
     const [statusFilter, setStatusFilter] = useState("");
     const [editingTask, setEditingTask] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
@@ -29,7 +30,6 @@ const Dashboard = () => {
     // ✅ Fetch Tasks
     const fetchTasks = async () => {
         setLoading(true);
-        setError(null);
         try {
             const response = await axios.get("http://localhost:8000/api/tasks/", {
                 headers: {
@@ -39,7 +39,7 @@ const Dashboard = () => {
             setTasks(response.data);
         } catch (error) {
             console.error(error);
-            setError("Failed to fetch tasks. Please try again.");
+            toast.error("Failed to fetch tasks. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -138,73 +138,71 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="p-8">
-            <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-            <button
-                onClick={() => {
-                    setEditingTask(null);
-                    setTitle("");
-                    setDescription("");
-                    setModalOpen(true);
-                }}
-                className="px-6 py-2 bg-green-600 text-white rounded mb-6"
-            >
-                Add Task
-            </button>
-
-            {loading && <p className="text-blue-500">Loading tasks...</p>}
-            {error && <p className="text-red-500">{error}</p>}
-
-            <ul>
-                {tasks.map((task) => (
-                    <li key={task.id} className="mb-4 p-4 bg-white rounded shadow">
-                        <h2 className="text-xl font-semibold">{task.title}</h2>
-                        <p>{task.description}</p>
-                        <p className="text-sm text-gray-500">Due: {task.due_date}</p>
-                        <div className="mt-4 space-x-2">
-                            <button onClick={() => handleEditTask(task)} className="px-4 py-2 bg-yellow-500 text-white rounded">
-                                Edit
-                            </button>
-                            <button onClick={() => handleDeleteTask(task.id)} className="px-4 py-2 bg-red-500 text-white rounded">
-                                Delete
-                            </button>
-                            <button onClick={() => handleToggleCompleted(task)} className="px-4 py-2 bg-blue-500 text-white rounded">
-                                {task.is_completed ? "Mark Incomplete" : "Mark Completed"}
-                            </button>
-                        </div>
-                    </li>
-                ))}
-            </ul>
-
-            {modalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-                        <h2 className="text-2xl font-bold mb-4">{editingTask ? "Edit Task" : "Add Task"}</h2>
-                        <form onSubmit={editingTask ? handleUpdateTask : handleCreateTask}>
-                            <input
-                                type="text"
-                                placeholder="Task Title"
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                className="w-full p-2 mb-4 border rounded"
-                                required
-                            />
-                            <textarea
-                                placeholder="Task Description"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                className="w-full p-2 mb-4 border rounded"
-                            />
-                            <button type="submit" className="px-6 py-2 bg-green-600 text-white rounded">
-                                {editingTask ? "Update Task" : "Create Task"}
-                            </button>
-                        </form>
+        <>
+            <Header />
+            <main className="bg-gray-100 min-h-screen p-4 md:p-8">
+                <div className="container mx-auto">
+                    <h1 className="text-4xl font-bold text-center text-indigo-800 mb-8">Dashboard</h1>
+                    <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <input
+                            type="text"
+                            placeholder="Search tasks..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="border p-2 rounded w-full md:w-1/3"
+                        />
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            className="border p-2 rounded w-full md:w-1/4"
+                        >
+                            <option value="">All</option>
+                            <option value="pending">Pending</option>
+                            <option value="completed">Completed</option>
+                            <option value="in_progress">In Progress</option>
+                        </select>
+                        <button
+                            onClick={() => {
+                                setEditingTask(null);
+                                setTitle("");
+                                setDescription("");
+                                setModalOpen(true);
+                            }}
+                            className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition font-semibold"
+                        >
+                            Add Task
+                        </button>
                     </div>
-                </div>
-            )}
 
+                    {loading ? (
+                        <p className="text-center text-blue-600">Loading tasks...</p>
+                    ) : (
+                        <ul className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                            {tasks.map((task) => (
+                                <li key={task.id} className="bg-white rounded-lg shadow p-4">
+                                    <h2 className="text-xl font-bold text-indigo-800">{task.title}</h2>
+                                    <p className="text-gray-600">{task.description}</p>
+                                    <p className="text-sm text-gray-500">Due: {task.due_date}</p>
+                                    <div className="mt-4 flex space-x-2">
+                                        <button onClick={() => handleEditTask(task)} className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                                            Edit
+                                        </button>
+                                        <button onClick={() => handleDeleteTask(task.id)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                                            Delete
+                                        </button>
+                                        <button onClick={() => handleToggleCompleted(task)} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                            {task.is_completed ? "Mark Incomplete" : "Mark Completed"}
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            </main>
+            <Footer />
             <ToastContainer />
-        </div>
+        </>
     );
 };
 
