@@ -18,13 +18,13 @@ const Dashboard = () => {
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
 
-    // ✅ Fetch Tasks on Load
+    //Fetch Tasks on Load
     useEffect(() => {
         if (!token) navigate("/login");
         else fetchTasks();
     }, [token, navigate]);
 
-    // ✅ Fetch Tasks
+    //Fetch Tasks
     const fetchTasks = async () => {
         try {
             const response = await axios.get("http://localhost:8000/api/tasks/", {
@@ -37,7 +37,7 @@ const Dashboard = () => {
         }
     };
 
-    // ✅ Filter Tasks on Search
+    //Filter Tasks on Search
     useEffect(() => {
         let filtered = tasks;
         if (searchTerm) {
@@ -48,12 +48,12 @@ const Dashboard = () => {
         setFilteredTasks(filtered);
     }, [searchTerm, tasks]);
 
-    // ✅ Calculate Summary Data
+    //Calculate Summary Data
     const totalTasks = tasks.length;
     const completedTasks = tasks.filter((task) => task.is_completed).length;
     const pendingTasks = totalTasks - completedTasks;
 
-    // ✅ Dynamic Greeting
+    //Dynamic Greeting
     const getGreeting = () => {
         const hour = new Date().getHours();
         if (hour < 12) return "Good Morning";

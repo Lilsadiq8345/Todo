@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TaskModal from "./TaskModal";
+import Sidebar from "./Sidebar";
+import Footer from "./Footer";
 import {
     AiOutlinePlus,
     AiOutlineEdit,
@@ -15,8 +17,6 @@ import {
     AiOutlineCloseCircle,
 } from "react-icons/ai";
 import DashboardHeader from "./DashboardHeader";
-import Footer from "./Footer";
-
 const TasksManagement = () => {
     const [tasks, setTasks] = useState([]);
     const [filteredTasks, setFilteredTasks] = useState([]);
@@ -31,7 +31,7 @@ const TasksManagement = () => {
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
 
-    // ✅ Fetch Tasks on Load
+    // Fetch Tasks on Load
     useEffect(() => {
         if (!token) {
             navigate("/login");
@@ -40,12 +40,12 @@ const TasksManagement = () => {
         fetchTasks();
     }, [token, navigate]);
 
-    // ✅ Filter Tasks on Changes
+    // Filter Tasks on Changes
     useEffect(() => {
         filterTasks();
     }, [searchTerm, filterStatus, tasks]);
 
-    // ✅ Fetch Tasks
+    // Fetch Tasks
     const fetchTasks = async () => {
         setLoading(true);
         try {
@@ -65,7 +65,7 @@ const TasksManagement = () => {
         }
     };
 
-    // ✅ Filter Tasks
+    // Filter Tasks
     const filterTasks = () => {
         let filtered = tasks;
 
@@ -86,7 +86,7 @@ const TasksManagement = () => {
         setFilteredTasks(filtered);
     };
 
-    // ✅ Create or Update Task
+    // Create or Update Task
     const handleSaveTask = async (e) => {
         e.preventDefault();
         try {
@@ -127,7 +127,7 @@ const TasksManagement = () => {
         }
     };
 
-    // ✅ Edit Task - Open Modal with Task Details
+    // Edit Task - Open Modal with Task Details
     const handleEditTask = (task) => {
         setEditingTask(task);
         setTitle(task.title);
@@ -135,7 +135,7 @@ const TasksManagement = () => {
         setModalOpen(true);
     };
 
-    // ✅ Delete Task
+    // Delete Task
     const handleDeleteTask = async (taskId) => {
         try {
             await axios.delete(`http://localhost:8000/api/tasks/${taskId}/`, {
@@ -151,7 +151,7 @@ const TasksManagement = () => {
         }
     };
 
-    // ✅ Toggle Task Completion
+    // Toggle Task Completion
     const handleToggleCompletion = async (task) => {
         try {
             const response = await axios.patch(
@@ -173,8 +173,11 @@ const TasksManagement = () => {
 
     return (
         <>
+
             <DashboardHeader />
-            <main className="bg-gray-100 min-h-screen p-4 md:p-8">
+            <Sidebar />
+            <main className="bg-gray-100 min-h-screen p-4 mt-12 md:p-8 ml-64 md:ml-64 lg:ml-64">
+
                 <div className="container mx-auto">
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="text-4xl font-bold text-indigo-800">Manage Tasks</h1>

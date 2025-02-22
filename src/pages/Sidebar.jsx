@@ -1,12 +1,30 @@
-import { Link } from "react-router-dom";
+// src/components/Sidebar.jsx
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineDashboard, AiOutlineLogout } from "react-icons/ai";
 import useAuthStore from "../store/authStore";
+import { useEffect } from "react";
 
 const Sidebar = () => {
-    const clearToken = useAuthStore((state) => state.clearToken);
+    const logout = useAuthStore((state) => state.logout);  // Get logout function
+    const token = useAuthStore((state) => state.token);    // Get token state
+    const navigate = useNavigate();
+
+    // Correct Logout Function
+    const handleLogout = () => {
+        logout();  // Clear Zustand and Local Storage
+        navigate("/login", { replace: true });
+        window.location.reload();  // Force reload to reset state
+    };
+
+    // Redirect to login if token is null
+    useEffect(() => {
+        if (!token) {
+            navigate("/login", { replace: true });
+        }
+    }, [token, navigate]);
 
     return (
-        <aside className="w-64 bg-indigo-900 text-white h-screen mt-4 fixed">
+        <aside className="w-64 bg-indigo-900 text-white h-screen fixed">
             <div className="p-4 text-2xl font-bold">Todo App</div>
             <nav>
                 <ul>
@@ -30,10 +48,7 @@ const Sidebar = () => {
                     </li>
                     <li>
                         <button
-                            onClick={() => {
-                                clearToken();
-                                window.location.href = "/login";
-                            }}
+                            onClick={handleLogout}  // Correct Logout Function
                             className="w-full text-left p-4 hover:bg-gray-600"
                         >
                             <AiOutlineLogout className="inline-block mr-2" />
