@@ -1,207 +1,132 @@
-import { useEffect, useState } from "react";
+// src/pages/Dashboard.jsx
+
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import useAuthStore from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Header from "./Header";
+import Sidebar from "./Sidebar";
+import DashboardHeader from "./DashboardHeader";
 import Footer from "./Footer";
 
 const Dashboard = () => {
     const [tasks, setTasks] = useState([]);
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [search, setSearch] = useState("");
-    const [statusFilter, setStatusFilter] = useState("");
-    const [editingTask, setEditingTask] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [modalOpen, setModalOpen] = useState(false);
+    const [filteredTasks, setFilteredTasks] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
 
+    // ✅ Fetch Tasks on Load
     useEffect(() => {
-        if (!token) {
-            navigate("/login");
-            return;
-        }
-        fetchTasks();
+        if (!token) navigate("/login");
+        else fetchTasks();
     }, [token, navigate]);
 
     // ✅ Fetch Tasks
     const fetchTasks = async () => {
-        setLoading(true);
         try {
             const response = await axios.get("http://localhost:8000/api/tasks/", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: { Authorization: `Bearer ${token}` },
             });
             setTasks(response.data);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to fetch tasks. Please try again.");
-        } finally {
-            setLoading(false);
+            toast.error("Failed to fetch tasks.");
         }
     };
 
-    // ✅ Create New Task
-    const handleCreateTask = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(
-                "http://localhost:8000/api/tasks/",
-                { title, description },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
+    // ✅ Filter Tasks on Search
+    useEffect(() => {
+        let filtered = tasks;
+        if (searchTerm) {
+            filtered = filtered.filter((task) =>
+                task.title.toLowerCase().includes(searchTerm.toLowerCase())
             );
-            setTasks([...tasks, response.data]);
-            setTitle("");
-            setDescription("");
-            setModalOpen(false);
-            toast.success("Task created successfully!");
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to create task.");
         }
-    };
+        setFilteredTasks(filtered);
+    }, [searchTerm, tasks]);
 
-    // ✅ Edit Task
-    const handleEditTask = (task) => {
-        setEditingTask(task);
-        setTitle(task.title);
-        setDescription(task.description);
-        setModalOpen(true);
-    };
+    // ✅ Calculate Summary Data
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter((task) => task.is_completed).length;
+    const pendingTasks = totalTasks - completedTasks;
 
-    const handleUpdateTask = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.put(
-                `http://localhost:8000/api/tasks/${editingTask.id}/`,
-                { title, description },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setTasks(tasks.map((task) => (task.id === editingTask.id ? response.data : task)));
-            setEditingTask(null);
-            setTitle("");
-            setDescription("");
-            setModalOpen(false);
-            toast.success("Task updated successfully!");
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to update task.");
-        }
-    };
-
-    // ✅ Delete Task
-    const handleDeleteTask = async (taskId) => {
-        try {
-            await axios.delete(`http://localhost:8000/api/tasks/${taskId}/`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setTasks(tasks.filter((task) => task.id !== taskId));
-            toast.success("Task deleted successfully!");
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to delete task.");
-        }
-    };
-
-    // ✅ Mark as Completed
-    const handleToggleCompleted = async (task) => {
-        try {
-            const response = await axios.put(
-                `http://localhost:8000/api/tasks/${task.id}/`,
-                { ...task, is_completed: !task.is_completed },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setTasks(tasks.map((t) => (t.id === task.id ? response.data : t)));
-            toast.success("Task status updated!");
-        } catch (error) {
-            console.error(error);
-            toast.error("Failed to update task status.");
-        }
+    // ✅ Dynamic Greeting
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return "Good Morning";
+        if (hour < 18) return "Good Afternoon";
+        return "Good Evening";
     };
 
     return (
         <>
-            <Header />
-            <main className="bg-gray-100 min-h-screen p-4 md:p-8">
-                <div className="container mx-auto">
-                    <h1 className="text-4xl font-bold text-center text-indigo-800 mb-8">Dashboard</h1>
-                    <div className="mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <input
-                            type="text"
-                            placeholder="Search tasks..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="border p-2 rounded w-full md:w-1/3"
-                        />
-                        <select
-                            value={statusFilter}
-                            onChange={(e) => setStatusFilter(e.target.value)}
-                            className="border p-2 rounded w-full md:w-1/4"
-                        >
-                            <option value="">All</option>
-                            <option value="pending">Pending</option>
-                            <option value="completed">Completed</option>
-                            <option value="in_progress">In Progress</option>
-                        </select>
-                        <button
-                            onClick={() => {
-                                setEditingTask(null);
-                                setTitle("");
-                                setDescription("");
-                                setModalOpen(true);
-                            }}
-                            className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition font-semibold"
-                        >
-                            Add Task
-                        </button>
-                    </div>
+            <DashboardHeader searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+            <Sidebar />
 
-                    {loading ? (
-                        <p className="text-center text-blue-600">Loading tasks...</p>
-                    ) : (
-                        <ul className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                            {tasks.map((task) => (
-                                <li key={task.id} className="bg-white rounded-lg shadow p-4">
-                                    <h2 className="text-xl font-bold text-indigo-800">{task.title}</h2>
-                                    <p className="text-gray-600">{task.description}</p>
-                                    <p className="text-sm text-gray-500">Due: {task.due_date}</p>
-                                    <div className="mt-4 flex space-x-2">
-                                        <button onClick={() => handleEditTask(task)} className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
-                                            Edit
-                                        </button>
-                                        <button onClick={() => handleDeleteTask(task.id)} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-                                            Delete
-                                        </button>
-                                        <button onClick={() => handleToggleCompleted(task)} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                            {task.is_completed ? "Mark Incomplete" : "Mark Completed"}
-                                        </button>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+            <main className="pl-64 bg-gray-100 min-h-screen mt-11 p-6">
+                <div className="container mx-auto">
+                    {/* Welcome Banner */}
+                    <section className="bg-indigo-900 text-white rounded-lg p-6 mb-8 shadow-md">
+                        <h1 className="text-3xl font-bold">{getGreeting()}!</h1>
+                        <p className="mt-2">
+                            Welcome to your dashboard. Manage your tasks efficiently and effectively.
+                        </p>
+                    </section>
+
+                    {/* Summary Section */}
+                    <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h2 className="text-xl font-bold text-gray-800">Total Tasks</h2>
+                            <p className="text-3xl font-bold text-indigo-600">{totalTasks}</p>
+                        </div>
+                        <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h2 className="text-xl font-bold text-gray-800">Completed Tasks</h2>
+                            <p className="text-3xl font-bold text-green-600">{completedTasks}</p>
+                        </div>
+                        <div className="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h2 className="text-xl font-bold text-gray-800">Pending Tasks</h2>
+                            <p className="text-3xl font-bold text-yellow-600">{pendingTasks}</p>
+                        </div>
+                    </section>
+
+                    {/* Tasks Overview */}
+                    <section className="bg-white p-6 rounded-lg shadow-md">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-4">Tasks Overview</h2>
+                        {filteredTasks.length > 0 ? (
+                            <ul className="space-y-4">
+                                {filteredTasks.map((task) => (
+                                    <li
+                                        key={task.id}
+                                        className="border-b pb-2 flex justify-between items-center"
+                                    >
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-indigo-800">
+                                                {task.title}
+                                            </h3>
+                                            <p className="text-gray-600">{task.description}</p>
+                                            <span
+                                                className={`text-sm font-semibold ${task.is_completed
+                                                    ? "text-green-600"
+                                                    : "text-yellow-600"
+                                                    }`}
+                                            >
+                                                {task.is_completed ? "Completed" : "Pending"}
+                                            </span>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-600">No tasks available.</p>
+                        )}
+                    </section>
                 </div>
             </main>
-            <Footer />
             <ToastContainer />
+            <Footer />
         </>
     );
 };
