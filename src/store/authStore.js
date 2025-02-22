@@ -1,13 +1,17 @@
-// src/store/authStore.js
 import { create } from "zustand";
 import axios from "axios";
 
 const useAuthStore = create((set) => ({
-    user: null,
-    token: null,
-    setUser: (user) => set({ user }),
+    user: JSON.parse(localStorage.getItem("user")) || null, // Load user from localStorage
+    token: localStorage.getItem("token") || null, // Load token from localStorage
+
+    setUser: (user) => {
+        localStorage.setItem("user", JSON.stringify(user)); // Save user in localStorage
+        set({ user });
+    },
+
     setToken: (token) => {
-        localStorage.setItem("token", token);  // Save token in localStorage
+        localStorage.setItem("token", token); // Save token in localStorage
         set({ token });
     },
 
@@ -17,17 +21,23 @@ const useAuthStore = create((set) => ({
                 email,
                 password,
             });
-            set({ token: response.data.access, user: response.data.user_type });
-            localStorage.setItem("token", response.data.access);  // Save token
+
+            const { access, user_type } = response.data;
+
+            localStorage.setItem("token", access); // Save token
+            localStorage.setItem("user", JSON.stringify(user_type)); // Save user data
+            set({ token: access, user: user_type });
+
             return response;
         } catch (error) {
-            console.error(error);
+            console.error("Login failed:", error);
+            throw error;
         }
     },
 
     logout: () => {
-        // Clear Zustand State and Local Storage
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
         set({ user: null, token: null });
     }
 }));

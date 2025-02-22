@@ -40,12 +40,7 @@ const Sidebar = () => {
                             Tasks Management
                         </Link>
                     </li>
-                    <li>
-                        <Link to="/profile-settings" className="block p-4 hover:bg-gray-600">
-                            <AiOutlineDashboard className="inline-block mr-2" />
-                            Profile Settings
-                        </Link>
-                    </li>
+
                     <li>
                         <button
                             onClick={handleLogout}  // Correct Logout Function

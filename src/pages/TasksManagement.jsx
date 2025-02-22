@@ -1,5 +1,3 @@
-// src/pages/TasksManagement.jsx
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import useAuthStore from "../store/authStore";
@@ -14,9 +12,9 @@ import {
     AiOutlineEdit,
     AiOutlineDelete,
     AiOutlineCheck,
-    AiOutlineCloseCircle,
 } from "react-icons/ai";
 import DashboardHeader from "./DashboardHeader";
+
 const TasksManagement = () => {
     const [tasks, setTasks] = useState([]);
     const [filteredTasks, setFilteredTasks] = useState([]);
@@ -31,7 +29,7 @@ const TasksManagement = () => {
     const token = useAuthStore((state) => state.token);
     const navigate = useNavigate();
 
-    // Fetch Tasks on Load
+    // ✅ Fetch Tasks on Load
     useEffect(() => {
         if (!token) {
             navigate("/login");
@@ -40,12 +38,12 @@ const TasksManagement = () => {
         fetchTasks();
     }, [token, navigate]);
 
-    // Filter Tasks on Changes
+    // ✅ Filter Tasks on Changes
     useEffect(() => {
         filterTasks();
     }, [searchTerm, filterStatus, tasks]);
 
-    // Fetch Tasks
+    // ✅ Fetch Tasks
     const fetchTasks = async () => {
         setLoading(true);
         try {
@@ -65,33 +63,31 @@ const TasksManagement = () => {
         }
     };
 
-    // Filter Tasks
+    // ✅ Filter Tasks
     const filterTasks = () => {
         let filtered = tasks;
 
+        // 🔎 Real-Time Search Filter
         if (searchTerm) {
-            filtered = filtered.filter(
-                (task) =>
-                    task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    task.description.toLowerCase().includes(searchTerm.toLowerCase())
+            filtered = filtered.filter((task) =>
+                task.title.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
 
+        // 🔽 Status Filter
         if (filterStatus !== "all") {
-            filtered = filtered.filter((task) =>
-                filterStatus === "completed" ? task.is_completed : !task.is_completed
-            );
+            filtered = filtered.filter((task) => task.status === filterStatus);
         }
 
         setFilteredTasks(filtered);
     };
 
-    // Create or Update Task
+    // ✅ Create or Update Task
     const handleSaveTask = async (e) => {
         e.preventDefault();
         try {
             if (editingTask) {
-                // Update Task
+                // 🔄 Update Task
                 const response = await axios.put(
                     `http://localhost:8000/api/tasks/${editingTask.id}/`,
                     { title, description },
@@ -104,7 +100,7 @@ const TasksManagement = () => {
                 setTasks(tasks.map((task) => (task.id === editingTask.id ? response.data : task)));
                 toast.success("Task updated successfully!");
             } else {
-                // Create Task
+                // ➕ Create Task
                 const response = await axios.post(
                     "http://localhost:8000/api/tasks/",
                     { title, description },
@@ -127,15 +123,16 @@ const TasksManagement = () => {
         }
     };
 
-    // Edit Task - Open Modal with Task Details
+    // ✅ Edit Task - Open Modal with Task Details
     const handleEditTask = (task) => {
         setEditingTask(task);
         setTitle(task.title);
         setDescription(task.description);
         setModalOpen(true);
+        setIsEditing(true);
     };
 
-    // Delete Task
+    // ✅ Delete Task
     const handleDeleteTask = async (taskId) => {
         try {
             await axios.delete(`http://localhost:8000/api/tasks/${taskId}/`, {
@@ -151,7 +148,7 @@ const TasksManagement = () => {
         }
     };
 
-    // Toggle Task Completion
+    // ✅ Toggle Task Completion
     const handleToggleCompletion = async (task) => {
         try {
             const response = await axios.patch(
@@ -173,11 +170,14 @@ const TasksManagement = () => {
 
     return (
         <>
-
-            <DashboardHeader />
+            <DashboardHeader
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                filterStatus={filterStatus}
+                setFilterStatus={setFilterStatus}
+            />
             <Sidebar />
-            <main className="bg-gray-100 min-h-screen p-4 mt-12 md:p-8 ml-64 md:ml-64 lg:ml-64">
-
+            <main className="bg-gray-100 min-h-screen p-4 mt-20 md:p-8 ml-64 md:ml-64 lg:ml-64">
                 <div className="container mx-auto">
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="text-4xl font-bold text-indigo-800">Manage Tasks</h1>
@@ -187,24 +187,25 @@ const TasksManagement = () => {
                                 setTitle("");
                                 setDescription("");
                                 setModalOpen(true);
+                                setIsEditing(false);
                             }}
                             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                         >
                             <AiOutlinePlus className="inline mr-2" />
                             Add Task
                         </button>
-                        <TaskModal
-                            isOpen={modalOpen}
-                            onClose={() => setModalOpen(false)}
-                            onSave={handleSaveTask}
-                            title={title}
-                            setTitle={setTitle}
-                            description={description}
-                            setDescription={setDescription}
-                            isEditing={isEditing}
-                        />
-
                     </div>
+
+                    <TaskModal
+                        isOpen={modalOpen}
+                        onClose={() => setModalOpen(false)}
+                        onSave={handleSaveTask}
+                        title={title}
+                        setTitle={setTitle}
+                        description={description}
+                        setDescription={setDescription}
+                        isEditing={isEditing}
+                    />
 
                     <div className="overflow-x-auto">
                         <table className="min-w-full bg-white shadow-md rounded-lg">

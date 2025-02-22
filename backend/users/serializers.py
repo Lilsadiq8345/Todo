@@ -29,7 +29,11 @@ class UserSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'user', 'title', 'description', 'due_date', 'status', 'is_completed', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'description', 'due_date', 'status', 'is_completed', 'created_at', 'updated_at']
+
+    def create(self, validated_data):
+        user = self.context['request'].user  # Get user from request context
+        return Task.objects.create(user=user, **validated_data)
 
 
 class NotificationSerializer(serializers.ModelSerializer):
