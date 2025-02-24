@@ -179,7 +179,7 @@ const TasksManagement = () => {
             <Sidebar />
             <main className="bg-gray-100 min-h-screen p-4 mt-20 md:p-8 ml-64 md:ml-64 lg:ml-64">
                 <div className="container mx-auto">
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-4">
                         <h1 className="text-4xl font-bold text-indigo-800">Manage Tasks</h1>
                         <button
                             onClick={() => {
@@ -189,7 +189,7 @@ const TasksManagement = () => {
                                 setModalOpen(true);
                                 setIsEditing(false);
                             }}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                            className="mt-4 md:mt-0 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                         >
                             <AiOutlinePlus className="inline mr-2" />
                             Add Task

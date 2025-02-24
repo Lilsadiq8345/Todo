@@ -10,7 +10,6 @@ const DashboardHeader = ({ searchTerm, setSearchTerm, filterStatus, setFilterSta
     const filterOptions = [
         { value: "all", label: "All" },
         { value: "pending", label: "Pending" },
-        { value: "in_progress", label: "In Progress" },
         { value: "completed", label: "Completed" }
     ];
 

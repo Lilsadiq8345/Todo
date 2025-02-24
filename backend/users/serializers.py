@@ -31,8 +31,23 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ['id', 'title', 'description', 'due_date', 'status', 'is_completed', 'created_at', 'updated_at']
 
+    def update(self, instance, validated_data):
+        # Check if 'is_completed' is being updated
+        if 'is_completed' in validated_data:
+            is_completed = validated_data.get('is_completed', instance.is_completed)
+
+            # Auto-update status based on is_completed value
+            if is_completed:
+                validated_data['status'] = 'completed'
+            else:
+                validated_data['status'] = 'pending'
+
+        return super().update(instance, validated_data)
+
     def create(self, validated_data):
         user = self.context['request'].user  # Get user from request context
+        # Remove 'user' from validated_data if it exists
+        validated_data.pop('user', None)
         return Task.objects.create(user=user, **validated_data)
 
 

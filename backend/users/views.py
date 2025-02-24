@@ -53,29 +53,53 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# ✅ List All Users
-class UserList(APIView):
-    permission_classes = [IsAuthenticated]  
+# ✅ List All Users (Admin only)
+class UserListView(generics.ListCreateAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
 
-    def get(self, request):
-        users = User.objects.filter(user_type='user')  
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        # Check if the user is an admin based on the `user_type`
+        if self.request.user.user_type == 'admin':
+            return User.objects.all()  # Admin can view all users
+        return User.objects.none()  # Non-admin users cannot view other users
+
+    def perform_create(self, serializer):
+        # Optionally, assign user roles (if needed)
+        serializer.save()
 
 
-# ✅ Task List & Creation
+# ✅ User Details, Update, Delete (Admin only)
+class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]  # Ensure user is authenticated
+
+    def get_queryset(self):
+        # Check if the user is an admin based on the `user_type`
+        if self.request.user.user_type == 'admin':
+            return User.objects.all()  # Admin can view, update, or delete users
+        return User.objects.none()  # Non-admin users cannot perform these actions
+
+# ✅ Task List & Creation with Filtering (Admin and User can create tasks)
 class TaskListCreateView(generics.ListCreateAPIView):
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
-    search_fields = ['title']  
-    filterset_fields = ['status']  
+    search_fields = ['title']
+    filterset_fields = ['status']
 
     def get_queryset(self):
+        # Admin can view all tasks, regular users can only view their own tasks
+        if self.request.user.user_type == 'admin':
+            return Task.objects.all()
         return Task.objects.filter(user=self.request.user)
 
-def perform_create(self, serializer):
-    serializer.save(user=self.request.user)
+    def perform_create(self, serializer):
+        # Ensure only the logged-in user can create tasks for themselves
+        if self.request.user.user_type != 'admin':
+            serializer.save(user=self.request.user)
+        else:
+            serializer.save()
 
 
 # ✅ Task Details, Update, Delete & Mark as Completed
@@ -84,23 +108,25 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        if self.request.user.user_type == 'admin':
+            return Task.objects.all()
         return Task.objects.filter(user=self.request.user)
 
     def perform_update(self, serializer):
-        status_value = self.request.data.get("status")
         task = serializer.save()
+        status_value = self.request.data.get("status")
 
         if status_value and status_value.lower() == "completed":
             task.status = "completed"
             task.save()
 
             # ✅ Create Notification
-            notification = Notification.objects.create(
+            Notification.objects.create(
                 user=task.user,
                 message=f"Your task '{task.title}' has been marked as completed."
             )
 
-            # ✅ Send Email
+            # ✅ Send Email Notification
             send_mail(
                 subject="Task Completed",
                 message=f"Hello {task.user.username},\n\nYour task '{task.title}' has been marked as completed.",

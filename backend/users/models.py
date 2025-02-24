@@ -21,7 +21,6 @@ class Task(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('completed', 'Completed'),
-        ('in_progress', 'In Progress'),
     )
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tasks')

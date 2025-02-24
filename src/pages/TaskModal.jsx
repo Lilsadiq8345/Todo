@@ -1,14 +1,12 @@
-// src/components/TaskModal.jsx
-
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { AiOutlineCloseCircle } from "react-icons/ai";
-import useAuthStore from "../store/authStore"; // ✅ Import Auth Store
+import useAuthStore from "../store/authStore";
 import { toast } from "react-toastify";
 
 const TaskModal = ({ isOpen, onClose, isEditing, editingTask, refreshTasks }) => {
     const token = useAuthStore((state) => state.token);
-    const user = useAuthStore((state) => state.user); // ✅ Get User from Auth Store
+    const user = useAuthStore((state) => state.user);
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -16,6 +14,7 @@ const TaskModal = ({ isOpen, onClose, isEditing, editingTask, refreshTasks }) =>
     const [status, setStatus] = useState("pending");
     const [loading, setLoading] = useState(false);
 
+    // Effect to pre-populate form fields when editing
     useEffect(() => {
         if (isEditing && editingTask) {
             setTitle(editingTask.title);
@@ -30,6 +29,7 @@ const TaskModal = ({ isOpen, onClose, isEditing, editingTask, refreshTasks }) =>
         }
     }, [isEditing, editingTask]);
 
+    // Close modal on escape key press
     useEffect(() => {
         const handleEscape = (event) => {
             if (event.key === "Escape") {
@@ -40,12 +40,14 @@ const TaskModal = ({ isOpen, onClose, isEditing, editingTask, refreshTasks }) =>
         return () => document.removeEventListener("keydown", handleEscape);
     }, [onClose]);
 
+    // Close modal on overlay click
     const handleOverlayClick = (event) => {
         if (event.target.id === "modal-overlay") {
             onClose();
         }
     };
 
+    // Focus the first input field when the modal opens
     useEffect(() => {
         if (isOpen) {
             const firstInput = document.querySelector("#title");
@@ -75,15 +77,12 @@ const TaskModal = ({ isOpen, onClose, isEditing, editingTask, refreshTasks }) =>
                 status,
             };
 
-            console.log("Submitting Task Data:", taskData);
-            console.log("User:", user);
-            console.log("Token:", token);
-
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             };
 
+            // If editing, update the task
             if (isEditing && editingTask) {
                 await axios.put(
                     `http://localhost:8000/api/tasks/${editingTask.id}/`,
@@ -92,14 +91,17 @@ const TaskModal = ({ isOpen, onClose, isEditing, editingTask, refreshTasks }) =>
                 );
                 toast.success("Task updated successfully!");
             } else {
+                // If adding new, create the task
                 await axios.post("http://localhost:8000/api/tasks/", taskData, { headers });
                 toast.success("Task created successfully!");
             }
 
+            // Clear form fields after successful save
             setTitle("");
             setDescription("");
             setDueDate("");
             setStatus("pending");
+
             onClose();
             refreshTasks();
         } finally {
@@ -107,6 +109,7 @@ const TaskModal = ({ isOpen, onClose, isEditing, editingTask, refreshTasks }) =>
         }
     };
 
+    // If the modal is not open, return null (do not render the modal)
     if (!isOpen) return null;
 
     return (
@@ -155,39 +158,24 @@ const TaskModal = ({ isOpen, onClose, isEditing, editingTask, refreshTasks }) =>
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 mb-2" htmlFor="dueDate">
+                        <label className="block text-gray-700 mb-2" htmlFor="due-date">
                             Due Date <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="date"
-                            id="dueDate"
+                            id="due-date"
                             value={dueDate}
                             onChange={(e) => setDueDate(e.target.value)}
                             className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
                             required
                         />
                     </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 mb-2" htmlFor="status">
-                            Status
-                        </label>
-                        <select
-                            id="status"
-                            value={status}
-                            onChange={(e) => setStatus(e.target.value)}
-                            className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
-                        >
-                            <option value="pending">Pending</option>
-                            <option value="in_progress">In Progress</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    </div>
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+                        className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
                         disabled={loading}
                     >
-                        {loading ? "Saving..." : isEditing ? "Update Task" : "Create Task"}
+                        {loading ? "Saving..." : isEditing ? "Update Task" : "Add Task"}
                     </button>
                 </form>
             </div>
