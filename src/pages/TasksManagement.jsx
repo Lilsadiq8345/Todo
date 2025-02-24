@@ -47,7 +47,7 @@ const TasksManagement = () => {
     const fetchTasks = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("http://localhost:8000/api/tasks/", {
+            const response = await axios.get("https://todo-0zke.onrender.com/api/tasks/", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -89,7 +89,7 @@ const TasksManagement = () => {
             if (editingTask) {
                 // 🔄 Update Task
                 const response = await axios.put(
-                    `http://localhost:8000/api/tasks/${editingTask.id}/`,
+                    `https://todo-0zke.onrender.com/api/tasks/${editingTask.id}/`,
                     { title, description },
                     {
                         headers: {
@@ -102,7 +102,7 @@ const TasksManagement = () => {
             } else {
                 // ➕ Create Task
                 const response = await axios.post(
-                    "http://localhost:8000/api/tasks/",
+                    "https://todo-0zke.onrender.com/api/tasks/",
                     { title, description },
                     {
                         headers: {
@@ -135,7 +135,7 @@ const TasksManagement = () => {
     // ✅ Delete Task
     const handleDeleteTask = async (taskId) => {
         try {
-            await axios.delete(`http://localhost:8000/api/tasks/${taskId}/`, {
+            await axios.delete(`https://todo-0zke.onrender.com/api/tasks/${taskId}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -152,7 +152,7 @@ const TasksManagement = () => {
     const handleToggleCompletion = async (task) => {
         try {
             const response = await axios.patch(
-                `http://localhost:8000/api/tasks/${task.id}/`,
+                `https://todo-0zke.onrender.com/api/tasks/${task.id}/`,
                 { is_completed: !task.is_completed },
                 {
                     headers: {

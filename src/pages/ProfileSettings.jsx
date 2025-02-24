@@ -31,7 +31,7 @@ const ProfileSettings = () => {
     const fetchProfile = async () => {
         setLoading(true);
         try {
-            const response = await axios.get("http://localhost:8000/api/profile/", {
+            const response = await axios.get("https://todo-0zke.onrender.com/api/profile/", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -52,7 +52,7 @@ const ProfileSettings = () => {
         setLoading(true);
         try {
             await axios.put(
-                "http://localhost:8000/api/profile/",
+                "https://todo-0zke.onrender.com/api/profile/",
                 {
                     name,
                     email,

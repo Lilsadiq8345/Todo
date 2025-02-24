@@ -17,7 +17,7 @@ const useAuthStore = create((set) => ({
 
     login: async (email, password) => {
         try {
-            const response = await axios.post("http://localhost:8000/api/login/", {
+            const response = await axios.post("https://todo-0zke.onrender.com/api/login/", {
                 email,
                 password,
             });

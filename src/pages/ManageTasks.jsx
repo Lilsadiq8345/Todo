@@ -40,7 +40,7 @@ const ManageTasks = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get("http://localhost:8000/api/tasks/", {
+            const response = await axios.get("https://todo-0zke.onrender.com/api/tasks/", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -86,7 +86,7 @@ const ManageTasks = () => {
             };
 
             const response = await axios.post(
-                "http://localhost:8000/api/tasks/",
+                "https://todo-0zke.onrender.com/api/tasks/",
                 taskData,
                 {
                     headers: {
@@ -121,7 +121,7 @@ const ManageTasks = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this task?")) {
             try {
-                await axios.delete(`http://localhost:8000/api/tasks/${id}/`, {
+                await axios.delete(`https://todo-0zke.onrender.com/api/tasks/${id}/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

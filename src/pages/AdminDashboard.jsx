@@ -26,7 +26,7 @@ const AdminDashboard = () => {
 
     const fetchTasks = async () => {
         try {
-            const response = await axios.get("http://localhost:8000/api/tasks/", {
+            const response = await axios.get("https://todo-0zke.onrender.com/api/tasks/", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setTasks(response.data);
@@ -38,7 +38,7 @@ const AdminDashboard = () => {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get("http://localhost:8000/api/users/", {
+            const response = await axios.get("https://todo-0zke.onrender.com/api/users/", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUsers(response.data);
@@ -57,7 +57,7 @@ const AdminDashboard = () => {
 
     const handleTaskAction = async (taskId, action) => {
         try {
-            await axios.put(`http://localhost:8000/api/tasks/${taskId}/`, { status: action }, {
+            await axios.put(`https://todo-0zke.onrender.com/api/tasks/${taskId}/`, { status: action }, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchTasks();

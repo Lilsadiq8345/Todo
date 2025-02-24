@@ -43,7 +43,7 @@ const ManageUsers = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get("http://localhost:8000/api/users/", {
+            const response = await axios.get("https://todo-0zke.onrender.com/api/users/", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -74,7 +74,7 @@ const ManageUsers = () => {
     const handleAddUser = async () => {
         try {
             const response = await axios.post(
-                "http://localhost:8000/api/users/",
+                "https://todo-0zke.onrender.com/api/users/",
                 newUser,
                 {
                     headers: {
@@ -96,7 +96,7 @@ const ManageUsers = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this user?")) {
             try {
-                await axios.delete(`http://localhost:8000/api/users/${id}/`, {
+                await axios.delete(`https://todo-0zke.onrender.com/api/users/${id}/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -132,7 +132,7 @@ const ManageUsers = () => {
     const handleEditSubmit = async () => {
         try {
             const response = await axios.put(
-                `http://localhost:8000/api/users/${editingUser.id}/`,
+                `https://todo-0zke.onrender.com/api/users/${editingUser.id}/`,
                 newUser,
                 {
                     headers: {

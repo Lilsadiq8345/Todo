@@ -27,7 +27,7 @@ const Dashboard = () => {
     //Fetch Tasks
     const fetchTasks = async () => {
         try {
-            const response = await axios.get("http://localhost:8000/api/tasks/", {
+            const response = await axios.get("https://todo-0zke.onrender.com/api/tasks/", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setTasks(response.data);

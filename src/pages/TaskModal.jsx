@@ -85,14 +85,14 @@ const TaskModal = ({ isOpen, onClose, isEditing, editingTask, refreshTasks }) =>
             // If editing, update the task
             if (isEditing && editingTask) {
                 await axios.put(
-                    `http://localhost:8000/api/tasks/${editingTask.id}/`,
+                    `https://todo-0zke.onrender.com/api/tasks/${editingTask.id}/`,
                     taskData,
                     { headers }
                 );
                 toast.success("Task updated successfully!");
             } else {
                 // If adding new, create the task
-                await axios.post("http://localhost:8000/api/tasks/", taskData, { headers });
+                await axios.post("https://todo-0zke.onrender.com/api/tasks/", taskData, { headers });
                 toast.success("Task created successfully!");
             }
 
