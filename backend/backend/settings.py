@@ -113,15 +113,16 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-        'default': {
+    'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'sql8764329',  
         'USER': 'sql8764329',  
         'PASSWORD': 'cMXEdpmHNp',  
         'HOST': 'sql8.freesqldatabase.com',  
-        'PORT': '3306', 
-         'OPTIONS': {
+        'PORT': '3306',  
+        'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',  
         }, 
     }
 }
