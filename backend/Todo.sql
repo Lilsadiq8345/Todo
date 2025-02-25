@@ -27,9 +27,10 @@ CREATE TABLE task (
     status ENUM('pending', 'completed') DEFAULT 'pending',
     is_completed BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES customuser(id) ON DELETE CASCADE
 );
+
 
 -- Notification Table
 CREATE TABLE notification (
