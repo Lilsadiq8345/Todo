@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS your_db_name;
-USE your_db_name;
+CREATE DATABASE IF NOT EXISTS sql8764329;
+USE sql8764329;
 
 -- CustomUser Table
 CREATE TABLE customuser (
