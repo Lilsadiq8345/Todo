@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-tgake5^xwc6m56i4sq)o(se3p1*giklg3wlrlnc*5waed=k*qm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['todo-0zke.onrender.com']
+ALLOWED_HOSTS = ['todo-0zke.onrender.com', 'carbonetrix-todo.netlify.app']
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -64,6 +64,16 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "https://carbonetrix-todo.netlify.app",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+CORS_ALLOW_HEADERS = ["*"]
+
+# CSRF Settings
+CSRF_TRUSTED_ORIGINS = [
+    "https://carbonetrix-todo.netlify.app",
+]
+
 
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
