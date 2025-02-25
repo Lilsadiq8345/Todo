@@ -1,21 +1,16 @@
-import os
 from pathlib import Path
 from datetime import timedelta
-from dotenv import load_dotenv  # Load environment variables
-
-# Load .env file
-load_dotenv()
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "fallback-secret-key")
+SECRET_KEY = "django-insecure-tgake5^xwc6m56i4sq)o(se3p1*giklg3wlrlnc*5waed=k*qm"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+DEBUG = False
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "todo-0zke.onrender.com,carbonetrix-todo.netlify.app").split(",")
+ALLOWED_HOSTS = ["todo-0zke.onrender.com", "carbonetrix-todo.netlify.app"]
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -47,25 +42,24 @@ MIDDLEWARE = [
 ]
 
 # CORS setup
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "https://carbonetrix-todo.netlify.app,https://todo-0zke.onrender.com").split(",")
-
+CORS_ALLOWED_ORIGINS = [
+    "https://carbonetrix-todo.netlify.app",
+    "https://todo-0zke.onrender.com"
+]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["*"]
 
 # CSRF Settings
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "https://carbonetrix-todo.netlify.app,https://todo-0zke.onrender.com").split(",")
+CSRF_TRUSTED_ORIGINS = ["https://carbonetrix-todo.netlify.app", "https://todo-0zke.onrender.com"]
 
 # Email Settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-
-if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
-    raise ValueError("EMAIL_HOST_USER and EMAIL_HOST_PASSWORD must be set in the environment variables")
+EMAIL_HOST_USER = "abubakarabdulrazak242@gmail.com"
+EMAIL_HOST_PASSWORD = "oxht xcfi vvix czdu"
 
 # REST Framework settings
 REST_FRAMEWORK = {
@@ -124,7 +118,7 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
