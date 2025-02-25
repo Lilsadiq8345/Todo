@@ -63,6 +63,7 @@ MIDDLEWARE = [
 # CORS setup
 CORS_ALLOWED_ORIGINS = [
     "https://carbonetrix-todo.netlify.app",
+    "https://todo-0zke.onrender.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
